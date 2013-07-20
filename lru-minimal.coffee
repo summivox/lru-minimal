@@ -1,4 +1,6 @@
 ###!
+https://github.com/smilekzs/lru-minimal/
+
 SMap: simple map with arbitrary string as key (properly escaped)
 Lru: SMap with element count limit (new element replaces least recently used one)
 !###
