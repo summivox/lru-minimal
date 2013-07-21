@@ -122,7 +122,9 @@ Lru = do ->
         x = x.n
       ret
 
-for exp in [this.window, module?.exports]
-  if exp
-    exp.SMap = SMap
-    exp.Lru = Lru
+((exp) ->
+  exp.SMap = SMap
+  exp.Lru = Lru
+) switch
+    when module?.exports then module.exports
+    when window? then window
