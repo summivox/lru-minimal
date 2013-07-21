@@ -96,6 +96,7 @@ Lru = do ->
       if x = @map.get k
         unlink x
         @map.delete k
+        @size = @map.size
         return true
       else
         return false
@@ -107,8 +108,10 @@ Lru = do ->
       @size = @map.size
       return true
     forEach: (cb) ->
-      @map.forEach (_, x) ->
+      x = @head.n
+      while x.n
         cb x.k, x.v
+        x = x.n
 
 for exp in [this.window, module?.exports]
   if exp
