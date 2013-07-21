@@ -1,8 +1,5 @@
 ###!
 https://github.com/smilekzs/lru-minimal/
-
-SMap: simple map with arbitrary string as key (properly escaped)
-Lru: SMap with element count limit (new element replaces least recently used one)
 !###
 
 SMap = do ->
@@ -16,6 +13,7 @@ SMap = do ->
     clear: ->
       @o = {}
       @size = 0
+      return
     set: (k, v) ->
       if !(sk = str k)? then bailout()
       ek = esc sk
@@ -38,10 +36,14 @@ SMap = do ->
         sk = unesc ek
         cb sk, v
       return
+    toArray: (cb) ->
+      for own ek, v of @o
+        sk = unesc ek
+        [sk, v]
 
 Lru = do ->
   # node: {p(rev), n(ext), k(ey), v(alue)}
-  # map: value: reference to node
+  # map: key -> reference to node
 
   # insert `x` between adjacent nodes `p` & `n`
   insert = (p, n, k, v) ->
@@ -102,16 +104,23 @@ Lru = do ->
         return false
     shift: ->
       x = @tail.p
-      if !x.p then return false
+      if !x.p then return
       unlink x
       @map.delete x.k
       @size = @map.size
-      return true
+      return [x.k, x.v]
     forEach: (cb) ->
       x = @head.n
       while x.n
         cb x.k, x.v
         x = x.n
+    toArray: (cb) ->
+      ret = []
+      x = @head.n
+      while x.n
+        ret.push [x.k, x.v]
+        x = x.n
+      ret
 
 for exp in [this.window, module?.exports]
   if exp

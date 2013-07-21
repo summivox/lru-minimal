@@ -1,6 +1,7 @@
 {
   strictEqual: EQ
   deepEqual: DEQ
+  throws: ERR
 } = require('assert')
 
 {SMap, Lru} = require('./lru-minimal.coffee')
@@ -23,13 +24,14 @@ EQ l.has('d'), false
 EQ l.set('d', 4), true
 EQ l.size, 3
 DEQ dump(), [['d', 4], ['a', 1], ['c', 3]]
+DEQ l.toArray(), [['d', 4], ['a', 1], ['c', 3]]
 
-l.shift()
+DEQ l.shift(), ['c', 3]
 DEQ dump(), [['d', 4], ['a', 1]]
 EQ l.size, 2
 EQ l.get('a'), 1
 EQ l.get('a'), 1
-DEQ dump(), [['a', 1], ['d', 4]]
+DEQ l.toArray(), [['a', 1], ['d', 4]]
 
 EQ l.set('e', 55), true
 EQ l.set('d', 44), false
@@ -51,7 +53,7 @@ DEQ dump(), [['f', 66]]
 EQ l.delete('f'), true
 EQ l.size, 0
 DEQ dump(), []
-EQ l.shift(), false
+EQ l.shift(), undefined
 
 EQ l.set('__proto__', ['p']), true
 EQ l.set('prototype', {p: 'p'}), true
@@ -64,3 +66,7 @@ do ->
   EQ v0(), 'h'
   EQ v1.p, 'p'
   EQ v2[0], 'p'
+
+ERR (-> l.set(undefined, 0)), Error
+ERR (-> l.get(undefined)), Error
+ERR (-> l.has(undefined)), Error
