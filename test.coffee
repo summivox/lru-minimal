@@ -12,15 +12,15 @@ dump = ->
   l.forEach (k, v) -> arr.push [k, v]
   arr
 
-l.set 'a', 1
-l.set 'b', 2
-l.set 'c', 3
+EQ l.set('a', 1), true
+EQ l.set('b', 2), true
+EQ l.set('c', 3), true
 EQ l.size, 3
 EQ l.get('a'), 1
 EQ l.has('a'), true
 EQ l.get('d'), undefined
 EQ l.has('d'), false
-l.set 'd', 4
+EQ l.set('d', 4), true
 EQ l.size, 3
 DEQ dump(), [['d', 4], ['a', 1], ['c', 3]]
 
@@ -31,12 +31,12 @@ EQ l.get('a'), 1
 EQ l.get('a'), 1
 DEQ dump(), [['a', 1], ['d', 4]]
 
-l.set 'e', 55
-l.set 'd', 44
+EQ l.set('e', 55), true
+EQ l.set('d', 44), false
 DEQ dump(), [['d', 44], ['e', 55], ['a', 1]]
-l.set 'a', 11
+EQ l.set('a', 11), false
 DEQ dump(), [['a', 11], ['d', 44], ['e', 55]]
-l.set 'f', 66
+EQ l.set('f', 66), true
 DEQ dump(), [['f', 66], ['a', 11], ['d', 44]]
 
 DEQ ['a', 'b', 'c', 'd', 'e', 'f'].map((x) -> l.has(x)),
@@ -51,3 +51,16 @@ DEQ dump(), [['f', 66]]
 EQ l.delete('f'), true
 EQ l.size, 0
 DEQ dump(), []
+EQ l.shift(), false
+
+EQ l.set('__proto__', ['p']), true
+EQ l.set('prototype', {p: 'p'}), true
+EQ l.set('hasOwnProperty', -> 'h'), true
+do ->
+  [[k0, v0], [k1, v1], [k2, v2]] = dump()
+  EQ k0, 'hasOwnProperty'
+  EQ k1, 'prototype'
+  EQ k2, '__proto__'
+  EQ v0(), 'h'
+  EQ v1.p, 'p'
+  EQ v2[0], 'p'
